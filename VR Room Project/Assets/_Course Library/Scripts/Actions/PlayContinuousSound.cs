@@ -71,7 +71,6 @@ public class PlayContinuousSound : MonoBehaviour
 
     public void TogglePlay()
     {
-        Debug.Log("here");
         bool isPlaying = !IsPlaying();
         SetPlay(isPlaying);
     }
