@@ -1,6 +1,7 @@
 ﻿
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Photon.Pun;
 
 /// <summary>
 /// Play a long continuous sound
@@ -21,6 +22,8 @@ public class PlayContinuousSound : MonoBehaviour
     private MonoBehaviour currentOwner = null;
     public float[] spectrum = new float[256];
 
+    private PhotonView photonView;
+
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -35,6 +38,7 @@ public class PlayContinuousSound : MonoBehaviour
 
     private void Start()
     {
+        photonView = GetComponent<PhotonView>();
         if (playOnStart)
             Play();
     }
@@ -71,8 +75,17 @@ public class PlayContinuousSound : MonoBehaviour
 
     public void TogglePlay()
     {
+        // bool isPlaying = !IsPlaying();
+        // SetPlay(isPlaying);
+        photonView.RPC("TogglePlayRemote", RpcTarget.All);
+    }
+
+    [PunRPC]
+    void TogglePlayRemote() 
+    {
         bool isPlaying = !IsPlaying();
         SetPlay(isPlaying);
+
     }
 
     public void SetPlay(bool playAudio)

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Photon.Pun;
 
 public class RotateMesh : MonoBehaviour
 {
@@ -14,6 +15,12 @@ public class RotateMesh : MonoBehaviour
     Vector3 PosDeltaMouse = Vector3.zero;
     public InputActionReference dragReferenceController = null;
     public InputActionReference dragReferenceMouse = null;
+    private PhotonView photonView;
+
+    void Start()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -41,6 +48,7 @@ public class RotateMesh : MonoBehaviour
 
     private void UpdateTransform(Vector3 delta) 
     {
+        photonView.RequestOwnership();
         if (Vector3.Dot(transform.up, Vector3.up) >= 0)
         {
             transform.Rotate(transform.up, -Vector3.Dot(delta, Camera.main.transform.right), Space.World);

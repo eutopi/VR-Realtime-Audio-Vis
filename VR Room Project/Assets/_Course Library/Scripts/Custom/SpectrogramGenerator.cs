@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
+using Photon.Pun;
 
 [RequireComponent(typeof(MeshFilter))]
 public class SpectrogramGenerator : MonoBehaviour
@@ -26,10 +27,12 @@ public class SpectrogramGenerator : MonoBehaviour
     private bool Ydown = false;
     private bool Xdown = false;
     private bool isHovering = false;
+    private PhotonView photonView;
 
     // Start is called before the first frame update
     void Start()
     {
+        photonView = GetComponent<PhotonView>();
         audioSource = boomBox.GetComponent<AudioSource>();
         stats = reticleText.GetComponent<TextMesh>();
         mesh = new Mesh();
@@ -65,10 +68,22 @@ public class SpectrogramGenerator : MonoBehaviour
     }
 
     public void ToggleY() {
+        //Ydown = !Ydown;
+        photonView.RPC("ToggleYRemote", RpcTarget.All);
+    }
+
+    [PunRPC]
+    void ToggleYRemote() {
         Ydown = !Ydown;
     }
 
     public void ToggleX() {
+        //Xdown = !Xdown;
+        photonView.RPC("ToggleXRemote", RpcTarget.All);
+    }
+
+    [PunRPC]
+    void ToggleXRemote() {
         Xdown = !Xdown;
     }
 
