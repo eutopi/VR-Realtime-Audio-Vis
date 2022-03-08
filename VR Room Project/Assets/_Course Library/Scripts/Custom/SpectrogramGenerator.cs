@@ -133,7 +133,7 @@ public class SpectrogramGenerator : MonoBehaviour
             for (int x = 0; x <= xSize; x++) {
                 float y;
                 if (i <= xSize) {
-                    y = spectrum[i] * 1000;
+                    y = spectrum[i] * 2000;
                     newVertices[i] = new Vector3(x, y, z);
                 }
                 else {
