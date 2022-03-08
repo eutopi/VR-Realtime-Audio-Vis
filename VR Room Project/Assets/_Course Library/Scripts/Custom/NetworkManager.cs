@@ -23,7 +23,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("Connected to server.");
         base.OnConnectedToMaster();
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 10;
+        roomOptions.MaxPlayers = 30;
         roomOptions.IsVisible = true;
         roomOptions.IsOpen = true;
 
