@@ -75,18 +75,18 @@ public class PlayContinuousSound : MonoBehaviour
 
     public void TogglePlay()
     {
-        // bool isPlaying = !IsPlaying();
-        // SetPlay(isPlaying);
-        photonView.RPC("TogglePlayRemote", RpcTarget.All);
-    }
-
-    [PunRPC]
-    void TogglePlayRemote() 
-    {
         bool isPlaying = !IsPlaying();
         SetPlay(isPlaying);
-
+        // photonView.RPC("TogglePlayRemote", RpcTarget.All);
     }
+
+    // [PunRPC]
+    // void TogglePlayRemote() 
+    // {
+    //     bool isPlaying = !IsPlaying();
+    //     SetPlay(isPlaying);
+
+    // }
 
     public void SetPlay(bool playAudio)
     {
