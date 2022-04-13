@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: bb679650-456e-4f57-92df-126c82c85642
+    AppIdRealtime: 2ea8a616-977f-4d8c-a0c8-4200b88d58c3
     AppIdFusion: 
     AppIdChat: 
-    AppIdVoice: 
+    AppIdVoice: 7cc303ae-677e-40e9-b221-bf39e9fbb932
     AppVersion: 
     UseNameServer: 1
     FixedRegion: 
@@ -42,6 +42,9 @@ MonoBehaviour:
   - TogglePlayRemote
   - ToggleXRemote
   - ToggleYRemote
+  - CantHearYou
+  - ChangeColour
+  - HeresWhy
   DisableAutoOpenWizard: 1
-  ShowSettings: 0
+  ShowSettings: 1
   DevRegionSetOnce: 1
