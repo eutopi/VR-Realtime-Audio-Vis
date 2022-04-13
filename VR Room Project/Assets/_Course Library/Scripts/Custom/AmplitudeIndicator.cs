@@ -11,7 +11,12 @@ public class AmplitudeIndicator : MonoBehaviour
     public Material amplitudeSphereMaterial;
     Mesh mesh;
     private AudioSource audioSource;    
+    private GameObject amplitudeSphereInner;
+    private GameObject amplitudeSphereOuter;
     private PhotonView photonView;
+    private bool isHovered = false;
+    private bool isIncreasing = false;
+    private bool isDecreasing = false;
 
     // Start is called before the first frame update
     void Start()
@@ -19,38 +24,62 @@ public class AmplitudeIndicator : MonoBehaviour
         photonView = GetComponent<PhotonView>();
         audioSource = GetComponent<AudioSource>();
 
-        createInnerSphere();
-        createOuterSphere();
-    }
-
-    void createInnerSphere() 
-    {
-        GameObject amplitudeSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        amplitudeSphere.transform.parent = transform;
-        amplitudeSphere.transform.position = transform.position;
-
-        SphereCollider sphereCollider = amplitudeSphere.GetComponent<SphereCollider>();
-        Destroy (sphereCollider);
-        amplitudeSphere.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
-        amplitudeSphere.GetComponent<MeshRenderer> ().material = amplitudeSphereMaterial;
-    }
-
-    void createOuterSphere()
-    {
-        GameObject amplitudeSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        amplitudeSphere.transform.parent = transform;
-        amplitudeSphere.transform.position = transform.position;
-
-        SphereCollider sphereCollider = amplitudeSphere.GetComponent<SphereCollider>();
-        Destroy (sphereCollider);
-        amplitudeSphere.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
-        amplitudeSphere.GetComponent<MeshRenderer> ().material = amplitudeSphereMaterial;
-        Mesh amplitudeSphereMesh = amplitudeSphere.GetComponent<MeshFilter>().mesh;
-        amplitudeSphereMesh.triangles = amplitudeSphereMesh.triangles.Reverse().ToArray();
+        CreateInnerSphere();
+        CreateOuterSphere();
     }
 
     void Update() 
     {
-        
+        if (isHovered) 
+        {
+            if (isIncreasing) 
+            {
+                audioSource.maxDistance += 0.05f;
+            }
+            else if (isDecreasing)
+            {
+                audioSource.maxDistance -= 0.05f;
+            }
+            amplitudeSphereInner.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
+            amplitudeSphereOuter.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
+        }
+    }
+
+    public void ToggleHovered() {
+        isHovered = !isHovered;
+    }
+
+    public void ToggleIncrease() {
+        isIncreasing = !isIncreasing;
+    }
+
+    public void ToggleDecrease() {
+        isDecreasing = !isDecreasing;
+    }
+
+    void CreateInnerSphere() 
+    {
+        amplitudeSphereInner = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        amplitudeSphereInner.transform.parent = transform;
+        amplitudeSphereInner.transform.position = transform.position;
+
+        SphereCollider sphereCollider = amplitudeSphereInner.GetComponent<SphereCollider>();
+        Destroy (sphereCollider);
+        amplitudeSphereInner.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
+        amplitudeSphereInner.GetComponent<MeshRenderer> ().material = amplitudeSphereMaterial;
+    }
+
+    void CreateOuterSphere()
+    {
+        amplitudeSphereOuter = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        amplitudeSphereOuter.transform.parent = transform;
+        amplitudeSphereOuter.transform.position = transform.position;
+
+        SphereCollider sphereCollider = amplitudeSphereOuter.GetComponent<SphereCollider>();
+        Destroy (sphereCollider);
+        amplitudeSphereOuter.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
+        amplitudeSphereOuter.GetComponent<MeshRenderer> ().material = amplitudeSphereMaterial;
+        Mesh amplitudeSphereMesh = amplitudeSphereOuter.GetComponent<MeshFilter>().mesh;
+        amplitudeSphereMesh.triangles = amplitudeSphereMesh.triangles.Reverse().ToArray();
     }
 }
