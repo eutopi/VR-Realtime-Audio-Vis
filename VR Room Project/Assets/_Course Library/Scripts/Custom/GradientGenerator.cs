@@ -33,6 +33,52 @@ public class GradientGenerator : MonoBehaviour
         UpdateMesh();
     }
 
+    bool isSameRow(int index, int newIndex) {
+        return index % xSize == newIndex % xSize;
+    }
+
+    bool distanceWithinRadius(int index1, int index2, float radius) {
+        Vector2 p1 = new Vector2(index1 % (xSize + 1), index1 / (xSize+1));
+        Vector2 p2 = new Vector2(index2 % (xSize + 1), index2 / (xSize+1));
+        return Vector2.Distance(p1,p2) <= radius;
+    }
+
+    bool isViable(int index, int originalIndex, float radius) {
+        return index > -1 && index < colors.Length && distanceWithinRadius(originalIndex, index, radius);
+    }
+
+    void FillRowColor(int index, int displacement, float maxDistance, int column, int originalIndex) 
+    {
+        float value = maxDistance - displacement;
+        if (isViable(index, originalIndex, maxDistance)) {
+            colors[index] = gradient.Evaluate(value);
+        }
+        for (int k = 1; k < displacement; k++) {
+            if (isViable(index+k, originalIndex, maxDistance) && column + k < xSize + 1) {
+                colors[index+k] = gradient.Evaluate(value);
+            }
+            if (isViable(index-k, originalIndex, maxDistance) && column - k > -1) {
+                colors[index-k] = gradient.Evaluate(value);
+            }
+        }
+    }
+
+    void FillColumnColor(int index, int displacement, float maxDistance, int column, int originalIndex) 
+    {   
+        float value = maxDistance - displacement;
+        if (isViable(index, originalIndex, maxDistance)) {
+            colors[index] = gradient.Evaluate(value);
+        }
+        for (int k = 1; k < displacement+1; k++) {
+            if (isViable(index+k*(xSize+1), originalIndex, maxDistance)) {
+                colors[index+k*(xSize+1)] = gradient.Evaluate(value);
+            }
+            if (isViable(index-k*(xSize+1), originalIndex, maxDistance)) {
+                colors[index-k*(xSize+1)] = gradient.Evaluate(value);
+            }
+        }
+    }
+
     void CreateShape()
     {
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
@@ -64,38 +110,60 @@ public class GradientGenerator : MonoBehaviour
             vert++;
         }
 
-        Debug.Log(vertices.Length);
+        colors = new Color[vertices.Length];
+        for (int i = 0, z = 0; z <= zSize; z++) {
+            for (int x = 0; x <= xSize; x++) {
+                colors[i] = gradient.Evaluate(0);
+                i++;
+            }
+        }
 
         Vector3 origin = transform.position;
         for (int i = 0; i < audioObjects.Length; i++) {
             Vector3 difference = audioObjects[i].transform.position - origin;
             int index = (xSize+1) * (Mathf.RoundToInt(difference.z)+1) + (Mathf.RoundToInt(difference.x)+1);
-            vertices[index].y = 5;
             AudioSource audioSource = audioObjects[i].GetComponent<AudioSource>();
-            for (int j = 0; j < audioSource.maxDistance; j++) {
-
-            }
-        }
-
-
-        colors = new Color[vertices.Length];
-        for (int i = 0, z = 0; z <= zSize; z++) {
-            for (int x = 0; x <= xSize; x++) {
-                colors[i] = gradient.Evaluate(vertices[i].y);
-                i++;
+            int column = Mathf.RoundToInt(difference.x)+1;
+            for (int j = 1; j < audioSource.maxDistance+1; j++) {
+                FillRowColor(index+j*(xSize+1), j, audioSource.maxDistance, column, index);
+                FillRowColor(index-j*(xSize+1), j, audioSource.maxDistance, column, index);
+                if (column - j > -1) {
+                    FillColumnColor(index-j, j, audioSource.maxDistance, column, index);
+                }
+                if (column + j < xSize+1) {
+                    FillColumnColor(index+j, j, audioSource.maxDistance, column, index);
+                }
             }
         }
     }
 
     void UpdateShape()
     {
-        // for (int i = 1; i < spectrum.Length + 1; i++) 
-        // {
-        //     float radius = Mathf.Max(0.3f, spectrum[i-1] * 100f);
-        //     float x = radius * Mathf.Cos(i*(2*Mathf.PI)/spectrum.Length);
-        //     float y = radius * Mathf.Sin(i*(2*Mathf.PI)/spectrum.Length);
-        //     vertices[i] = new Vector3(x, height, y);
-        // }
+        colors = new Color[vertices.Length];
+        for (int i = 0, z = 0; z <= zSize; z++) {
+            for (int x = 0; x <= xSize; x++) {
+                colors[i] = gradient.Evaluate(0);
+                i++;
+            }
+        }
+
+        Vector3 origin = transform.position;
+        for (int i = 0; i < audioObjects.Length; i++) {
+            Vector3 difference = audioObjects[i].transform.position - origin;
+            int index = (xSize+1) * (Mathf.RoundToInt(difference.z)+1) + (Mathf.RoundToInt(difference.x)+1);
+            AudioSource audioSource = audioObjects[i].GetComponent<AudioSource>();
+            int column = Mathf.RoundToInt(difference.x)+1;
+            for (int j = 1; j < audioSource.maxDistance+1; j++) {
+                FillRowColor(index+j*(xSize+1), j, audioSource.maxDistance, column, index);
+                FillRowColor(index-j*(xSize+1), j, audioSource.maxDistance, column, index);
+                if (column - j > -1) {
+                    FillColumnColor(index-j, j, audioSource.maxDistance, column, index);
+                }
+                if (column + j < xSize+1) {
+                    FillColumnColor(index+j, j, audioSource.maxDistance, column, index);
+                }
+            }
+        }
     }
 
     void UpdateMesh()
