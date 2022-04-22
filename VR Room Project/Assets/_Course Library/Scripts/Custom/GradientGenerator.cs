@@ -16,6 +16,8 @@ public class GradientGenerator : MonoBehaviour
     private float height = 1.0f;
     public GameObject[] audioObjects;
     Color[] colors;
+    private float[] colorContributions;
+    private float totalMaxDistance;
     public Gradient gradient;
     void Start()
     {
@@ -44,21 +46,21 @@ public class GradientGenerator : MonoBehaviour
     }
 
     bool isViable(int index, int originalIndex, float radius) {
-        return index > -1 && index < colors.Length && distanceWithinRadius(originalIndex, index, radius);
+        return index > -1 && index < colorContributions.Length && distanceWithinRadius(originalIndex, index, radius);
     }
 
     void FillRowColor(int index, int displacement, float maxDistance, int column, int originalIndex) 
     {
         float value = maxDistance - displacement;
         if (isViable(index, originalIndex, maxDistance)) {
-            colors[index] = gradient.Evaluate(value);
+            colorContributions[index] += value / totalMaxDistance;
         }
         for (int k = 1; k < displacement; k++) {
             if (isViable(index+k, originalIndex, maxDistance) && column + k < xSize + 1) {
-                colors[index+k] = gradient.Evaluate(value);
+                colorContributions[index+k] += value / totalMaxDistance;
             }
             if (isViable(index-k, originalIndex, maxDistance) && column - k > -1) {
-                colors[index-k] = gradient.Evaluate(value);
+                colorContributions[index-k] += value / totalMaxDistance;
             }
         }
     }
@@ -67,14 +69,14 @@ public class GradientGenerator : MonoBehaviour
     {   
         float value = maxDistance - displacement;
         if (isViable(index, originalIndex, maxDistance)) {
-            colors[index] = gradient.Evaluate(value);
+            colorContributions[index] += value / totalMaxDistance;
         }
         for (int k = 1; k < displacement+1; k++) {
             if (isViable(index+k*(xSize+1), originalIndex, maxDistance)) {
-                colors[index+k*(xSize+1)] = gradient.Evaluate(value);
+                colorContributions[index+k*(xSize+1)] += value / totalMaxDistance;
             }
             if (isViable(index-k*(xSize+1), originalIndex, maxDistance)) {
-                colors[index-k*(xSize+1)] = gradient.Evaluate(value);
+                colorContributions[index-k*(xSize+1)] += value / totalMaxDistance;
             }
         }
     }
@@ -84,7 +86,6 @@ public class GradientGenerator : MonoBehaviour
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
         for (int i = 0, z = 0; z <= zSize; z++) {
             for (int x = 0; x <= xSize; x++) {
-                //float y = Mathf.PerlinNoise(x * 0.3f, z * 0.3f) * 2f;
                 vertices[i] = new Vector3(x, 0, z);
                 i++;
             }
@@ -110,47 +111,30 @@ public class GradientGenerator : MonoBehaviour
             vert++;
         }
 
-        colors = new Color[vertices.Length];
-        for (int i = 0, z = 0; z <= zSize; z++) {
-            for (int x = 0; x <= xSize; x++) {
-                colors[i] = gradient.Evaluate(0);
-                i++;
-            }
-        }
-
-        Vector3 origin = transform.position;
-        for (int i = 0; i < audioObjects.Length; i++) {
-            Vector3 difference = audioObjects[i].transform.position - origin;
-            int index = (xSize+1) * (Mathf.RoundToInt(difference.z)+1) + (Mathf.RoundToInt(difference.x)+1);
-            AudioSource audioSource = audioObjects[i].GetComponent<AudioSource>();
-            int column = Mathf.RoundToInt(difference.x)+1;
-            for (int j = 1; j < audioSource.maxDistance+1; j++) {
-                FillRowColor(index+j*(xSize+1), j, audioSource.maxDistance, column, index);
-                FillRowColor(index-j*(xSize+1), j, audioSource.maxDistance, column, index);
-                if (column - j > -1) {
-                    FillColumnColor(index-j, j, audioSource.maxDistance, column, index);
-                }
-                if (column + j < xSize+1) {
-                    FillColumnColor(index+j, j, audioSource.maxDistance, column, index);
-                }
-            }
-        }
+        UpdateShape();
     }
 
     void UpdateShape()
     {
-        colors = new Color[vertices.Length];
+        colorContributions = new float[vertices.Length];
         for (int i = 0, z = 0; z <= zSize; z++) {
             for (int x = 0; x <= xSize; x++) {
-                colors[i] = gradient.Evaluate(0);
+                colorContributions[i] = 0f;
                 i++;
             }
+        }
+
+        totalMaxDistance = 0f;
+        for (int i = 0; i < audioObjects.Length; i++) {
+            AudioSource audioSource = audioObjects[i].GetComponent<AudioSource>();
+            totalMaxDistance += audioSource.maxDistance;
         }
 
         Vector3 origin = transform.position;
         for (int i = 0; i < audioObjects.Length; i++) {
             Vector3 difference = audioObjects[i].transform.position - origin;
-            int index = (xSize+1) * (Mathf.RoundToInt(difference.z)+1) + (Mathf.RoundToInt(difference.x)+1);
+            int index = (xSize+1) * (Mathf.RoundToInt(difference.z)) + (Mathf.RoundToInt(difference.x));
+            colorContributions[index] = 1.0f;
             AudioSource audioSource = audioObjects[i].GetComponent<AudioSource>();
             int column = Mathf.RoundToInt(difference.x)+1;
             for (int j = 1; j < audioSource.maxDistance+1; j++) {
@@ -162,6 +146,14 @@ public class GradientGenerator : MonoBehaviour
                 if (column + j < xSize+1) {
                     FillColumnColor(index+j, j, audioSource.maxDistance, column, index);
                 }
+            }
+        }
+
+        colors = new Color[vertices.Length];
+        for (int i = 0, z = 0; z <= zSize; z++) {
+            for (int x = 0; x <= xSize; x++) {
+                colors[i] = gradient.Evaluate(colorContributions[i]*2);
+                i++;
             }
         }
     }
