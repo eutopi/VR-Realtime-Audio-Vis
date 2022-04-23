@@ -13,7 +13,6 @@ public class GradientGenerator : MonoBehaviour
     int[] triangles;
     public int xSize = 60;
     public int zSize = 12;
-    private float height = 1.0f;
     public GameObject[] audioObjects;
     Color[] colors;
     private float[] colorContributions;

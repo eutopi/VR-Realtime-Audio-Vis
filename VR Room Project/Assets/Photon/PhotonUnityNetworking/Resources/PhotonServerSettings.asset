@@ -45,6 +45,10 @@ MonoBehaviour:
   - CantHearYou
   - ChangeColour
   - HeresWhy
+  - RescaleAmplitude
+  - DecreaseAmplitude
+  - IncreaseAmplitude
+  - ChangeAmplitude
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
