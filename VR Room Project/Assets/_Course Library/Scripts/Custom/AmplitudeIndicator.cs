@@ -37,8 +37,10 @@ public class AmplitudeIndicator : MonoBehaviour
                 photonView.RPC("ChangeAmplitude", RpcTarget.All, 0.05f);
             }
             else if (isDecreasing)
-            {
-                photonView.RPC("ChangeAmplitude", RpcTarget.All, -0.05f);
+            {   
+                if (audioSource.maxDistance > 1.0f) {
+                    photonView.RPC("ChangeAmplitude", RpcTarget.All, -0.05f);
+                }
             }
             // amplitudeSphereInner.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
             // amplitudeSphereOuter.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
@@ -52,41 +54,41 @@ public class AmplitudeIndicator : MonoBehaviour
         amplitudeSphereInner.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
         amplitudeSphereOuter.transform.localScale = new Vector3(audioSource.maxDistance, audioSource.maxDistance, audioSource.maxDistance);
     }
-    public void ToggleHovered() {
-        isHovered = !isHovered;
+    // public void ToggleHovered() {
+    //     isHovered = !isHovered;
+    // }
+
+    // public void ToggleIncrease() {
+    //     isIncreasing = !isIncreasing;
+    // }
+
+    // public void ToggleDecrease() {
+    //     isDecreasing = !isDecreasing;
+    // }
+
+    public void SetHoverTrue() {
+        isHovered = true;
     }
 
-    public void ToggleIncrease() {
-        isIncreasing = !isIncreasing;
+    public void SetHoverFalse() {
+        isHovered = false;
     }
 
-    public void ToggleDecrease() {
-        isDecreasing = !isDecreasing;
+    public void SetIncreaseTrue() {
+        isIncreasing = true;
     }
 
-    // public void SetHoverTrue() {
-    //     isHovered = true;
-    // }
+    public void SetIncreaseFalse() {
+        isIncreasing = false;
+    }
 
-    // public void SetHoverFalse() {
-    //     isHovered = false;
-    // }
+    public void SetDecreaseTrue() {
+        isDecreasing = true;
+    }
 
-    // public void SetIncreaseTrue() {
-    //     isIncreasing = true;
-    // }
-
-    // public void SetIncreaseFalse() {
-    //     isIncreasing = false;
-    // }
-
-    // public void SetDecreaseTrue() {
-    //     isDecreasing = true;
-    // }
-
-    // public void SetDecreaseFalse() {
-    //     isDecreasing = false;
-    // }
+    public void SetDecreaseFalse() {
+        isDecreasing = false;
+    }
 
     void CreateInnerSphere() 
     {
