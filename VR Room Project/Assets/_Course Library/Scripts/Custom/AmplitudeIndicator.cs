@@ -38,7 +38,7 @@ public class AmplitudeIndicator : MonoBehaviour
             }
             else if (isDecreasing)
             {   
-                if (audioSource.maxDistance > 1.0f) {
+                if (audioSource.maxDistance > 1.1f) {
                     photonView.RPC("ChangeAmplitude", RpcTarget.All, -0.05f);
                 }
             }
