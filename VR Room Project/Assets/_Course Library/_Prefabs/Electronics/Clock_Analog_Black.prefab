@@ -126,7 +126,6 @@ GameObject:
   - component: {fileID: 9088937991799805483}
   - component: {fileID: 5737831504772046805}
   - component: {fileID: 5632790476638720002}
-  - component: {fileID: 5710300962232842656}
   m_Layer: 0
   m_Name: Clock_Analog_A
   m_TagString: Untagged
@@ -197,19 +196,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5710300962232842656
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4788992467623507528}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.30073527, y: 0.017914334, z: 0.30846924}
-  m_Center: {x: -2.6729333e-10, y: 0.008968876, z: 2.6729333e-10}
 --- !u!1 &5102794517875732740
 GameObject:
   m_ObjectHideFlags: 0
